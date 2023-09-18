@@ -31,5 +31,5 @@ client.on_message = on_message
 client.subscribe(f'zigbee2mqtt/{SENSOR}', qos=QOS)
 print(f'Subscribed to: {SENSOR}')
 
-time.sleep(4) # wait
+time.sleep(100) # wait
 client.loop_stop() #stop the loop
