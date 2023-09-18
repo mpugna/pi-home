@@ -6,7 +6,7 @@ BROKER_PORT = 1883
 BROKER_IP = "127.0.0.1"
 MQTT_KEEPALIVE = 60
 QOS = 0
-SENSOR = "SNZB02_01"
+SENSOR = "SNZB02_1"
 
 
 def on_message(client, userdata, message):
