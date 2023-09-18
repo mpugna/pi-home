@@ -27,7 +27,7 @@ else:
     logging.basicConfig(filename=LOG_FILE, level=logging.INFO, filemode='w')
 
 # Start log file
-logging.info(f'Starting at {datetime.now()} with loglevel={LOG_LEVEL}')
+logging.info(f'Starting at {dt.datetime.now()} with loglevel={LOG_LEVEL}')
 
 
 db = sqlite3.connect(DATABASE)
@@ -38,7 +38,7 @@ cursor = db.cursor()
 def sigint_handler(signum, frame):
     ''' SIGINT handler - exit gracefully
     '''
-    logging.info(f'Program recevied SIGINT at: {datetime.now()}')
+    logging.info(f'Program recevied SIGINT at: {dt.datetime.now()}')
     logging.shutdown()
     db.close()
     sys.exit(0)
