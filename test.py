@@ -14,6 +14,8 @@ QOS = 0
 SENSOR = "SNZB02_1"
 DATABASE = "pi-home.db"
 LOG_LEVEL = "DEBUG"
+LOGFILE = pi-home.log
+
 
 
 # Start logging and set logging level; default to INFO level
@@ -25,7 +27,7 @@ else:
     logging.basicConfig(filename=LOG_FILE, level=logging.INFO, filemode='w')
 
 # Start log file
-logging.info(f'Starting at {datetime.now()} with version {VERSION} loglevel={LOG_LEVEL}')
+logging.info(f'Starting at {datetime.now()} with loglevel={LOG_LEVEL}')
 
 
 db = sqlite3.connect(DATABASE)
