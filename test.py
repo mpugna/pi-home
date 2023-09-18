@@ -14,7 +14,7 @@ QOS = 0
 SENSOR = "SNZB02_1"
 DATABASE = "pi-home.db"
 LOG_LEVEL = "DEBUG"
-LOGFILE = pi-home.log
+LOGFILE = "pi-home.log"
 
 
 
