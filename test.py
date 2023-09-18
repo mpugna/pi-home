@@ -4,6 +4,7 @@ import json
 import sqlite3
 import logging
 import signal
+import sys
 import sched, time
 # https://github.com/dschuurman/pi-home
 
