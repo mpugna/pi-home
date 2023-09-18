@@ -1,0 +1,195 @@
+<html>
+<!-- Pi-Home plot measurement data for last day, month, and year -->
+<head>
+   <title>Pi-Home Data</title>
+   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <style>
+      {% include 'style.css' %}
+  </style>
+</head>
+
+<body onload="document.getElementById('sensors').className='active';">
+   {% include 'header.html' %}
+   <h2>Sensor status and data charts</h2>
+
+   This section provides monitoring for one or more Zigbee sensors.
+   <br>The Zigbee "friendly names" of the configued sensors are: {{ sensors }}
+
+   <p>Last readings at: {{day_data[-1][0]}}
+   <table>
+   <tr><td>Temperature: </td><td><b>{{day_data[-1][1]}} </b> &deg;C</td></tr>
+   <tr><td>Relative Humidity: </td><td><b>{{day_data[-1][2]}} </b>% </td></tr>
+   <tr><td>Air Pressure: </td><td><b>{{day_data[-1][3]}} </b> hPa </td></tr>
+   <tr><td>Water Leak</td><td> <b>{{water_leak}}</b> </td></tr>
+   <tr><td>Low Battery</td><td> <b>{{low_battery}}</b> </td></tr>
+   </table>
+
+   <p>Alarms will trigger e-mail alerts to: {{email}}
+      <form action="" method="post">
+          <button name="test_email" type="submit" value="test">Send test Email</button>
+      </form>
+
+   <hr>
+   <div id='chart_day'></div>
+   <hr>
+   <div id='chart_month'></div>
+   <hr>
+   <div id='chart_year'></div>
+   <hr>
+
+   <script>
+      // Data for last day
+      var dayTemperature = {
+      x: [  {% for row in day_data %}
+            '{{row[0]}}',{% endfor %}
+         ],
+      y: [  {% for row in day_data %}
+         {{row[1]}},{% endfor %}
+         ],
+      name: 'Temperature',
+      type: 'scatter'
+      };
+
+      var dayHumidity = {
+      x: [  {% for row in day_data %}
+            '{{row[0]}}',{% endfor %}   
+         ],
+      y: [  {% for row in day_data %}
+         {{row[2]}},{% endfor %}
+         ],
+      name: 'Humidity',
+      yaxis: 'y2',
+      type: 'scatter'
+      };
+
+      var dayPressure = {
+      x: [  {% for row in day_data %}
+            '{{row[0]}}',{% endfor %}   
+         ],
+      y: [  {% for row in day_data %}
+         {{row[3]}},{% endfor %}
+         ],
+      name: 'Pressure',
+      yaxis: 'y3',
+      type: 'scatter'
+      };  
+
+      // combine all y-axes for temperature, humidity, and pressure
+      var dayData = [dayTemperature, dayHumidity, dayPressure];
+
+     // Data for last month
+     var monthTemperature = {
+      x: [  {% for row in month_data %}
+            '{{row[0]}}',{% endfor %}   
+         ],
+      y: [  {% for row in month_data %}
+            {{row[1]}},{% endfor %}
+         ],
+      name: 'Temperature',
+      type: 'scatter'
+      };
+
+      var monthHumidity = {
+      x: [  {% for row in month_data %}
+            '{{row[0]}}',{% endfor %}   
+         ],
+      y: [  {% for row in month_data %}
+            {{row[2]}},{% endfor %}
+         ],
+      name: 'Humidity',
+      yaxis: 'y2',
+      type: 'scatter'
+      };
+
+      var monthPressure = {
+      x: [  {% for row in month_data %}
+            '{{row[0]}}',{% endfor %}   
+         ],
+      y: [  {% for row in month_data %}
+            {{row[3]}},{% endfor %}
+         ],
+      name: 'Pressure',
+      yaxis: 'y3',
+      type: 'scatter'
+      };  
+
+      // combine all y-axes for temperature, humidity, and pressure
+      var monthData = [monthTemperature, monthHumidity, monthPressure];
+
+     // Data for last year
+     var yearTemperature = {
+      x: [  {% for row in year_data %}
+            '{{row[0]}}',{% endfor %}   
+         ],
+      y: [  {% for row in year_data %}
+         {{row[1]}},{% endfor %}
+         ],
+      name: 'Temperature',
+      type: 'scatter'
+      };
+
+      var yearHumidity = {
+      x: [  {% for row in year_data %}
+            '{{row[0]}}',{% endfor %}   
+         ],
+      y: [  {% for row in year_data %}
+            {{row[2]}},{% endfor %}
+         ],
+      name: 'Humidity',
+      yaxis: 'y2',
+      type: 'scatter'
+      };
+
+      var yearPressure = {
+      x: [  {% for row in year_data %}
+            '{{row[0]}}',{% endfor %}   
+         ],
+      y: [  {% for row in year_data %}
+            {{row[3]}},{% endfor %}
+         ],
+      name: 'Pressure',
+      yaxis: 'y3',
+      type: 'scatter'
+      };  
+
+      // combine all y-axes for temperature, humidity, and pressure
+      var yearData = [yearTemperature, yearHumidity, yearPressure];
+
+      // define the layout of the plots
+      var layout = {
+      title: 'Sensor Data',
+      xaxis: {
+         title: 'Date and time',
+         domain: [0.25, 1.0]
+      },
+      yaxis: {
+         title: 'Temperature (degrees C)',
+         side: "right"
+      },
+      yaxis2: {
+         title: 'Relative Humidity (%)',
+         anchor: "free",
+         overlaying: "y",
+         side: 'left',
+         position: 0.15
+      },
+      yaxis3: {
+         title: 'Pressure (hPa)',
+         anchor: "x",
+         overlaying: "y",
+         side: "left"
+      }
+   };
+
+   // Draw the charts
+   layout.title = 'Sensor data for the past day';
+   Plotly.newPlot('chart_day', dayData, layout);
+   layout.title = 'Sensor data for the last month';
+   Plotly.newPlot('chart_month', monthData, layout);
+   layout.title = 'Sensor data for the last year';
+   Plotly.newPlot('chart_year', yearData, layout);
+   </script>
+
+</body>
+</html>

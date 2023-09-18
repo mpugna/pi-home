@@ -1,0 +1,98 @@
+<html>
+<!-- For details, see: https://github.com/dschuurman/pi-home -->
+<head>
+    <title>Pi-Home Automation</title>
+    <!-- Make the webpage more responsive to mobile browswers -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        {% include 'style.css' %}
+    </style>
+</head>
+
+{# Constants for on and off modes #}
+{% set FIXED = 0 %}
+{% set DUSK = 1 %}
+{% set DAWN = 2 %}
+
+<body onload="document.getElementById('home').className='active';">
+    {% include 'header.html' %}
+
+    <h2>Status</h2>
+    <p>The configured Zigbee devices include:
+    <ul>
+        {% for device in device_list %} 
+           <li>{{device}}</li>
+        {% endfor %}
+    </ul>
+
+    <table>
+        <tr><td>Temperature: </td><td><b> {{temperature}} </b> &deg;C</td></tr>
+        <tr><td>Relative Humidity: </td><td><b> {{humidity}} </b>% </td></tr>
+        <tr><td>Air Pressure: </td><td><b> {{pressure}} </b> hPa </td></tr>
+        <tr><td>Water Leak</td><td> <b>{{water_leak}}</b> </td></tr>
+        <tr><td>Low Battery</td><td> <b>{{low_battery}}</b> </td></tr>
+
+        <tr><td>Smart bulbs</td>
+        <td>
+            {% if bulbs_state %}
+            <b>ON</b>
+            {% else %}
+            <b>OFF</b>
+            {% endif %}
+        </td></tr>
+        <tr><td>Bulb brightness</td><td> {{brightness}} </td></tr>
+        <tr><td>Smart outlets</td>
+        <td>
+            {% if outlets_state %}
+            <b>ON</b>
+            {% else %}
+            <b>OFF</b>
+            {% endif %}
+        </td></tr>
+        <tr><td>Timer control of Bulbs</td><td> <b>{{bulbs_timer}}</b>
+            {% if bulbs_timer %}
+
+            <br>ON time: {{bulbs_on_time}}
+            {% if bulbs_on_time_mode == DUSK %}
+            (dusk)
+            {% elif bulbs_on_time_mode == FIXED %}
+            (fixed time each day)
+            {% endif %}
+
+            <br>OFF time: {{bulbs_off_time}}
+            {% if bulbs_off_time_mode == DAWN %}
+            (dawn)
+            {% elif bulbs_off_time_mode == FIXED %}
+            (fixed time each day)
+            {% endif %}
+
+            {% endif %}
+        </td></tr>
+        <tr><td>Timer control of Outlets</td><td> <b>{{outlets_timer}}</b>
+            {% if outlets_timer %}
+
+            <br>ON time: {{outlets_on_time}}
+            {% if outlets_on_time_mode == DUSK %}
+            (dusk)
+            {% elif outlets_on_time_mode == FIXED %}
+            (fixed time each day)
+            {% endif %}
+
+            <br>OFF time: {{outlets_off_time}}
+            {% if outlets_off_time_mode == DAWN %}
+            (dawn)
+            {% elif outlets_off_time_mode == FIXED %}
+            (fixed time each day)
+            {% endif %}
+
+            {% endif %}
+        </td></tr>
+    </table>
+
+    <p>Queue of currently scheduled events:
+    <ul>
+    {% for event in schedule %}
+    <li>{{event}}{% endfor %}   
+    </ul>
+</body>
+</html>
