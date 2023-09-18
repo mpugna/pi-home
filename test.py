@@ -1,6 +1,6 @@
 import paho.mqtt.client as mqtt
 import datetime as dt
-import time
+import sched, time
 
 
 BROKER_PORT = 1883
@@ -8,6 +8,7 @@ BROKER_IP = "127.0.0.1"
 MQTT_KEEPALIVE = 60
 QOS = 0
 SENSOR = "SNZB02_1"
+
 
 
 def on_message(client, userdata, message):
@@ -34,7 +35,7 @@ client.subscribe(f'zigbee2mqtt/{SENSOR}', qos=QOS)
 print(f'Subscribed to: {SENSOR}')
 
 try:
-    client.loop_start()
+    client.loop_forever()
 except KeyboardInterrupt:
     client.disconnect()
     print('Terminating due to KeyboardInterrupt.')
