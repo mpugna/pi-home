@@ -5,7 +5,7 @@ import sqlite3
 import logging
 import signal
 import sched, time
-
+# https://github.com/dschuurman/pi-home
 
 BROKER_PORT = 1883
 BROKER_IP = "127.0.0.1"
@@ -51,7 +51,8 @@ signal.signal(signal.SIGINT, sigint_handler)
 
 def on_message(client, userdata, message):
     sensor_name = message.topic.split('/')[1]   # Extract sensor "friendly name" from MQTT topic
-    status = json.loads(message) # Parse JSON message from sensor into a dictionary
+    msg = str(message.payload.decode("utf-8"))
+    status = json.loads(msg) # Parse JSON message from sensor into a dictionary
     temperature = status["temperature"] if "temperature" in status.keys() else None
     humidity = status["humidity"] if "humidity" in status.keys() else None
     linkquality = status["linkquality"] if "linkquality" in status.keys() else None
