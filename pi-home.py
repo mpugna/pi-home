@@ -51,26 +51,13 @@ if SENSORS != []:
     SENSORS = SENSORS.split(',')
     for i in range(len(SENSORS)):
         SENSORS[i] = SENSORS[i].strip()
-BULBS = conf.get('pi-home', 'bulbs', fallback=[])
-if BULBS != []:
-    BULBS = BULBS.split(',')
-    for i in range(len(BULBS)):
-        BULBS[i] = BULBS[i].strip()
-OUTLETS = conf.get('pi-home', 'outlets', fallback=[])
-if OUTLETS != []:
-    OUTLETS = OUTLETS.split(',')
-    for i in range(len(OUTLETS)):
-        OUTLETS[i] = OUTLETS[i].strip()
-BRIGHTNESS = conf.getint('pi-home', 'brightness',fallback=254)
-BULBS_OFF_TIME = conf.get('pi-home', 'bulbs_off_time',fallback='23:59')
 DATABASE = conf.get('pi-home', 'database', fallback='/home/pi/sensor_data.db')
 WEB_SERVER_PORT = conf.getint('pi-home', 'web_server_port', fallback=8080)
 WEB_INTERFACE = conf.getboolean('pi-home', 'web_interface',fallback=False)
-CITY = conf.get('pi-home', 'city',fallback='Detroit')
 LOG_FILE = conf.get('pi-home', 'logfile', fallback='/tmp/pi-home.log')
 LOW_TEMP_THRESHOLD = conf.getfloat('pi-home', 'low_temp_threshold', fallback=10.0)
 HIGH_HUMIDITY_THRESHOLD = conf.getfloat('pi-home', 'high_humidity_threshold', fallback=85.0)
-SAMPLE_PERIOD = conf.getint('pi-home', 'sample_period', fallback=300)
+SAMPLE_PERIOD = conf.getint('pi-home', 'sample_period', fallback=180)
 SENDER_EMAIL = conf.get('pi-home', 'sender_email', fallback='')
 RECIPIENT_EMAIL = conf.get('pi-home', 'recipient_email', fallback='')
 SMTP_SERVER = conf.get('pi-home', 'smtp_server', fallback='')
@@ -86,26 +73,6 @@ else:
 
 # Start log file
 logging.info(f'Starting at {datetime.now()} with version {VERSION} loglevel={LOG_LEVEL}')
-
-# Check configuration settings
-# Check brightness value
-if not (0 <= BRIGHTNESS <=254):
-    logging.error(f'Invalid brightness setting in configuration file: {BRIGHTNESS} -  setting default (254)')
-    BRIGHTNESS = 254
-else:
-    logging.info(f'Brightness settting: {BRIGHTNESS}')
-# Check city setting
-try:
-    lookup(CITY, database())
-except KeyError:
-    logging.error(f'Unrecognized city in configuration file: {CITY}')
-# Check off-time setting
-if not ((':' in BULBS_OFF_TIME) and (4 <= len(BULBS_OFF_TIME) <= 5) and (0 <= int(BULBS_OFF_TIME.split(':')[0]) < 24) and (0 <= int(BULBS_OFF_TIME.split(':')[1])<60)):
-    logging.error(f'Invalid off_time in conf file {BULBS_OFF_TIME} - using default off-time 23:59')
-    BULBS_OFF_TIME = "23:59"
-# Set default lights off-time for today
-lights_out_time = datetime.now().replace(hour=int(BULBS_OFF_TIME.split(':')[0]), minute=int(BULBS_OFF_TIME.split(':')[1]))
-logging.info(f'Default lights OFF time set to: {lights_out_time.strftime("%H:%M")}')
 
 # setup a sigint handler to exit gracefully on signal
 signal.signal(signal.SIGINT, sigint_handler)
@@ -138,16 +105,10 @@ for sensor in SENSORS:
     client.subscribe(f'zigbee2mqtt/{sensor}', qos=QOS)
     logging.info(f'Subscribed to: {sensor}')
 
-# Create an object to control lights with smart bulbs
-bulbs = Bulbs(BULBS, BRIGHTNESS, scheduler, client, CITY)
-bulbs.set_off_time(lights_out_time.hour, lights_out_time.minute)
-
-# Create an object to control smart outlets
-outlets = Outlets(OUTLETS, scheduler, client, CITY)
 
 # Start a flask web server in a separate thread
 logging.info('Starting web interface...')
-server = FlaskThread(WEB_SERVER_PORT, bulbs, outlets, sensors, events, DATABASE, LOG_FILE, VERSION)
+server = FlaskThread(WEB_SERVER_PORT, sensors, events, DATABASE, LOG_FILE, VERSION)
 server.start()
 
 # Loop forever waiting for events

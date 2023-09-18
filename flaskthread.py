@@ -24,10 +24,8 @@ NUMBER_OF_PLOT_POINTS = 1000
 class FlaskThread(Thread):
     ''' Class definition to run flask to provide web pages to display sensor data
     '''
-    def __init__(self, port, bulbs, outlets, sensors, events, database, logfile, version):
+    def __init__(self, port, sensors, events, database, logfile, version):
         self.port = port
-        self.bulbs = bulbs
-        self.outlets = outlets
         self.sensors = sensors
         self.events = events
         self.database = database
@@ -39,8 +37,6 @@ class FlaskThread(Thread):
         self.app = Flask(__name__)
         self.app.debug = True        
         self.app.add_url_rule('/', 'index', self.index)
-        self.app.add_url_rule('/bulbs', 'bulbs', self.bulbs_page, methods=['GET', 'POST'])
-        self.app.add_url_rule('/outlets', 'outlets', self.outlets_page, methods=['GET', 'POST'])
         self.app.add_url_rule('/sensors', 'sensors', self.sensors_page, methods=['GET', 'POST'])
         self.app.add_url_rule('/log', 'log', self.log)
         self.app.add_url_rule('/about', 'about', self.about)
@@ -54,11 +50,7 @@ class FlaskThread(Thread):
         ''' Returns index.html webpage to show system status
         '''
         # Get bulbs on and off times
-        bulbs_on_time=self.bulbs.get_next_on_time().strftime("%H:%M")
-        bulbs_off_time=self.bulbs.get_next_off_time().strftime("%H:%M")
-        outlets_on_time=self.outlets.get_next_on_time().strftime("%H:%M")
-        outlets_off_time=self.outlets.get_next_off_time().strftime("%H:%M")
-        device_list = self.sensors.sensor_list + self.bulbs.bulbs_list + self.outlets.outlets_list
+        device_list = self.sensors.sensor_list 
         
         # Create a list of scheduled timer events to display
         schedule = []
@@ -66,7 +58,7 @@ class FlaskThread(Thread):
             schedule.append(f'time={datetime.fromtimestamp(event.time).strftime("%H:%M")}, action={event.action.__name__} ({(datetime.fromtimestamp(event.time)-datetime.now()).total_seconds()/60:.1f} minutes from now)')
 
         # pass the output state to index.html to display current state on webpage
-        return render_template('index.html', device_list=device_list, temperature=self.sensors.get_temperature(), humidity=self.sensors.get_humidity(), pressure=self.sensors.get_pressure(), bulbs_state=self.bulbs.state, bulbs_on_time_mode=self.bulbs.on_time_mode, bulbs_on_time=bulbs_on_time, bulbs_off_time_mode=self.bulbs.off_time_mode, bulbs_off_time=bulbs_off_time, bulbs_timer=self.bulbs.timer, outlets_state=self.outlets.state, outlets_on_time_mode=self.outlets.on_time_mode, outlets_on_time=outlets_on_time, outlets_off_time_mode=self.outlets.off_time_mode, outlets_off_time=outlets_off_time, outlets_timer=self.outlets.timer, brightness=str(self.bulbs.brightness), water_leak=self.sensors.water_leak, low_battery=self.sensors.low_battery, schedule=schedule)
+        return render_template('index.html', device_list=device_list, temperature=self.sensors.get_temperature(), humidity=self.sensors.get_humidity(), low_battery=self.sensors.battery, schedule=schedule)
 
     # Methods for each flask webpage route
     def bulbs_page(self):

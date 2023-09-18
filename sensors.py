@@ -20,7 +20,7 @@ from email.mime.multipart import MIMEMultipart
 
 # Constants
 TABLE = 'SensorData'
-TIMER_PERIOD = 300
+TIMER_PERIOD = 180
 
 # Alarm codes
 LOW_TEMPERATURE_ALARM = 1
@@ -33,34 +33,27 @@ HUMIDITY_HYSTERESIS = 2.0
 
 # Sensor class definitions
 
-class Sensors:
-    ''' class to manage device state for lights and outlets and sensors
-    '''
+class SNZB02:
+    ''' class to manage device state for Sonoff SNZB02 '''
 
-    def __init__(self, sensor_list, low_temp_threshold, high_humidity_threshold):
+    def __init__(self, sensor_list):
         ''' Constructor: connect to MQTT broker and initialize state variables
             control bulbs, outlets, and store and retrieve sensor states
         '''
         self.sensor_list = sensor_list
-        # Temp and humidity thresholds to trigger an alert
-        self.low_temp_threshold = low_temp_threshold
-        self.high_hunidity_threshold = high_humidity_threshold
+
 
         # Initialize states to None
         self.temperature = None
         self.humidity = None
-        self.pressure = None
-        self.water_leak = False
-        self.low_battery = False
-    
+        self.battery = None
+        self.linkquality = False
+     
     def set_temperature(self, temp):
         self.temperature = temp
 
     def set_humidity(self, humidity):
         self.humidity = humidity
-
-    def set_pressure(self, pressure):
-        self.pressure = pressure
 
     def get_temperature(self):
         return self.temperature
@@ -68,11 +61,11 @@ class Sensors:
     def get_humidity(self):
         return self.humidity
 
-    def get_pressure(self):
-        return self.pressure
+    def get_battery(self):
+        return self.battery
 
-    def get_water_leak(self):
-        return self.water_leak
+    def get_linkquality(self):
+        return self.linkquality
 
     def is_low_temp(self):
         if self.temperature == None:
@@ -80,41 +73,12 @@ class Sensors:
         else:
             return self.temperature < self.low_temp_threshold
 
-    def is_freezing(self):
-        if self.temperature == None:
-            return False
-        else:
-            return self.temperature < 0.0
-
-    def is_above_freezing(self):
-        if self.temperature == None:
-            return False
-        else:
-            return self.temperature > TEMPERATURE_HYSTERESIS 
-
-    def is_temp_normal(self):
-        if self.temperature == None:
-            return False
-        else:
-            return self.temperature > self.low_temp_threshold + TEMPERATURE_HYSTERESIS
-
-    def is_high_humidity(self):
-        if self.humidity == None:
-            return False
-        else:
-            return self.humidity > self.high_hunidity_threshold
-
-    def is_humidity_normal(self):
-        if self.humidity == None:
-            return False
-        else:
-            return self.humidity < self.high_hunidity_threshold - HUMIDITY_HYSTERESIS
-
     def __str__(self):
         sensor_str = self.sensor_list[0]
         for i in range(1,len(self.sensor_list)):
             sensor_str += f', {self.sensor_list[i]}'
         return sensor_str
+    
 
 class Events:
     ''' Event class used to handle periodic sensor sampling and MQTT messages from sensors

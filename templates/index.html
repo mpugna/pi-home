@@ -9,10 +9,6 @@
     </style>
 </head>
 
-{# Constants for on and off modes #}
-{% set FIXED = 0 %}
-{% set DUSK = 1 %}
-{% set DAWN = 2 %}
 
 <body onload="document.getElementById('home').className='active';">
     {% include 'header.html' %}
@@ -28,9 +24,7 @@
     <table>
         <tr><td>Temperature: </td><td><b> {{temperature}} </b> &deg;C</td></tr>
         <tr><td>Relative Humidity: </td><td><b> {{humidity}} </b>% </td></tr>
-        <tr><td>Air Pressure: </td><td><b> {{pressure}} </b> hPa </td></tr>
-        <tr><td>Water Leak</td><td> <b>{{water_leak}}</b> </td></tr>
-        <tr><td>Low Battery</td><td> <b>{{low_battery}}</b> </td></tr>
+        <tr><td>Battery</td><td> <b>{{battery}}</b> </td></tr>
 
         <tr><td>Smart bulbs</td>
         <td>
