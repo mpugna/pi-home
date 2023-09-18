@@ -1,4 +1,5 @@
 import paho.mqtt.client as mqtt
+import datetime as dt
 import time
 
 
@@ -10,6 +11,7 @@ SENSOR = "SNZB02_1"
 
 
 def on_message(client, userdata, message):
+    print(f"Timestamp: {dt.datetime.now():%Y-%m-%d %H:%M:%S}")
     print("message received " ,str(message.payload.decode("utf-8")))
     print("message topic=",message.topic)
     print("message qos=",message.qos)
@@ -21,7 +23,7 @@ client = mqtt.Client()
 ret = client.connect(BROKER_IP, BROKER_PORT, MQTT_KEEPALIVE)
 if ret != 0:
     print(f'MQTT connect return code: {ret}')
-client.loop_start() #start the loop
+
 
 client.subscribe(f"zigbee2/{SENSOR}")
 client.on_message = on_message
@@ -31,5 +33,9 @@ client.on_message = on_message
 client.subscribe(f'zigbee2mqtt/{SENSOR}', qos=QOS)
 print(f'Subscribed to: {SENSOR}')
 
-time.sleep(100) # wait
-client.loop_stop() #stop the loop
+try:
+    client.loop_start()
+except KeyboardInterrupt:
+    client.disconnect()
+    print('Terminating due to KeyboardInterrupt.')
+    
