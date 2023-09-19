@@ -98,7 +98,7 @@ def on_message(client, userdata, message):
     rows = cursor.fetchall()
     logging.info(rows[0])
     
-    cursor.execute("SELECT * FROM SENSORS", [since_epoch(dt.datetime.now() - dt.timedelta(days=1))])
+    cursor.execute("SELECT * FROM SENSORS WHERE timestamp < ?;", [since_epoch(dt.datetime.now() - dt.timedelta(days=1))])
     rows = cursor.fetchall()
     print(pd.DataFrame(rows))
         
