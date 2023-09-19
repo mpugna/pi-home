@@ -32,7 +32,7 @@ logging.info(f'Starting at {dt.datetime.now()} with loglevel={LOG_LEVEL}')
 
 
 db = sqlite3.connect(DATABASE)
-db.execute(f'CREATE TABLE IF NOT EXISTS SENSORS (name TEXT NOT NULL, datetime TEXT NOT NULL, temperature double, humidity double, linkquality double, battery double)')
+db.execute(f'CREATE TABLE IF NOT EXISTS SENSORS (sensor_name TEXT NOT NULL, timestamp TEXT NOT NULL, temperature double, humidity double, linkquality double, battery double)')
 cursor = db.cursor()
 
 
@@ -65,8 +65,9 @@ def on_message(client, userdata, message):
     logging.debug(f'{dt.datetime.now()}: inserting data into to table: {temperature},{humidity},{linkquality}{battery}')
 
     # Insert temp and humidity data into table
-    sqlcmd = f"INSERT INTO SENSORS VALUES ({sensor_name}, datetime('now','localtime'),{temperature},{humidity},{linkquality},{battery})"
+    sqlcmd = f"INSERT INTO SENSORS VALUES ({sensor_name},datetime('now','localtime'),{temperature},{humidity},{linkquality},{battery})"
     sqlcmd = sqlcmd.replace('None','NULL')
+    print(sqlcmd)
     cursor.execute(sqlcmd)
     print("{} record inserted.".format(cursor.rowcount))
     logging.debug("{} record inserted.".format(cursor.rowcount))
