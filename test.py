@@ -77,7 +77,7 @@ def on_message(client, userdata, message):
     print([sensor_name,timestamp,temperature,humidity,linkquality,battery])
     try:
         cursor.execute(sqlcmd, [f'{sensor_name}',f'{timestamp}',temperature,humidity,linkquality,battery])
-    except sqlite3.OperationalError as er:
+    except Exception as er:
         print('SQLite error: %s' % (' '.join(er.args)))
         print("Exception class is: ", er.__class__)
         print('SQLite traceback: ')
