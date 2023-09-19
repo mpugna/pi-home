@@ -98,7 +98,7 @@ def on_message(client, userdata, message):
     rows = cursor.fetchall()
     logging.info(rows[0])
     
-    cursor.execute("SELECT * FROM SENSORS;')
+    cursor.execute("SELECT * FROM SENSORS;")
     rows = cursor.fetchall()
     print(rows)
 
