@@ -51,7 +51,7 @@ signal.signal(signal.SIGINT, sigint_handler)
 
 
 def timestamp_fmt(d: dt.datetime) -> str:
-    return d.strftime("%Y-%m-%d_%H:%M:%S.%f")
+    return str(d.strftime("%Y-%m-%d_%H:%M:%S.%f"))
 
 
 def on_message(client, userdata, message):
