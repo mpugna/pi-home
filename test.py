@@ -79,6 +79,9 @@ def on_message(client, userdata, message):
     logging.debug("{} records deleted.".format(cursor.rowcount))
     db.commit()
         
+    cursor.execute("SELECT * FROM table SENSORS LIMIT 1;")
+    rows = cursor.fetchall()
+    print(rows[0])
         
     print(f"Timestamp: {dt.datetime.now():%Y-%m-%d %H:%M:%S}")
     print(sensor_name, temperature, humidity, linkquality, battery)
