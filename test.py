@@ -74,7 +74,7 @@ def on_message(client, userdata, message):
     logging.debug("{} record inserted.".format(cursor.rowcount))
 
     # Keep just the last 3 years of readings
-    sqlcmd = f"DELETE FROM SENSORS WHERE datetime < datetime('now','localtime','-1095 days')"
+    sqlcmd = f"DELETE FROM SENSORS WHERE datetime < " +  (dt.datetime.now() + dt.timedelta(days=-1095)).isoformat()
     cursor.execute(sqlcmd)
     #print("{} records deleted.".format(cursor.rowcount))
     logging.debug("{} records deleted.".format(cursor.rowcount))
