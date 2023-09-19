@@ -107,7 +107,9 @@ def on_message(client, userdata, message):
     #db.set_trace_callback(None)
     rows = cursor.fetchall()
     #print(rows)
-    print(pd.DataFrame(rows))
+    data = pd.DataFrame(rows, columns=["name", "timestamp", "temperature","humidity","linkquality","battery"])
+    data["timestamp"] = data["timestamp"].apply(lambda x: dt.datetime.fromtimestamp(x))
+    print(data.head())
         
     #print(f"Timestamp: {dt.datetime.now():%Y-%m-%d %H:%M:%S}")
     #print(sensor_name, temperature, humidity, linkquality, battery)
