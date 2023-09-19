@@ -68,6 +68,7 @@ def on_message(client, userdata, message):
     sqlcmd = f"INSERT INTO 'SENSORS' ('name', 'timestamp', 'temperature', 'humidity', 'linkquality', 'battery') " + \
         f"VALUES ('{sensor_name}','{timestamp}',{temperature:.2f},{humidity:.2f},{linkquality:.0f},{battery:.2f});"
     sqlcmd = sqlcmd.replace('None','NULL')
+    print(sqlcmd)
     cursor.execute(sqlcmd)
     #print("{} record inserted.".format(cursor.rowcount))
     logging.debug("{} record inserted.".format(cursor.rowcount))
