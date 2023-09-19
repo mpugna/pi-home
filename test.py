@@ -48,9 +48,12 @@ def sigint_handler(signum, frame):
 signal.signal(signal.SIGINT, sigint_handler)
 
 
+def timestamp_fmt(d: dt.datetime) -> str:
+    return d.strftime("%Y-%m-%d, %H:%M:%S.%f")
+
 
 def on_message(client, userdata, message):
-    timestamp = str(dt.datetime.now().isoformat())
+    timestamp = timestamp_fmt(dt.datetime.now())
     sensor_name = message.topic.split('/')[1]   # Extract sensor "friendly name" from MQTT topic
     msg = str(message.payload.decode("utf-8"))
     status = json.loads(msg) # Parse JSON message from sensor into a dictionary
@@ -74,7 +77,7 @@ def on_message(client, userdata, message):
     logging.debug("{} record inserted.".format(cursor.rowcount))
 
     # Keep just the last 3 years of readings
-    sqlcmd = f"DELETE FROM SENSORS WHERE datetime < " +  (dt.datetime.now() + dt.timedelta(days=-1095)).isoformat()
+    sqlcmd = f"DELETE FROM SENSORS WHERE datetime < " +  timestamp_fmt(dt.datetime.now() + dt.timedelta(days=-1095))
     cursor.execute(sqlcmd)
     #print("{} records deleted.".format(cursor.rowcount))
     logging.debug("{} records deleted.".format(cursor.rowcount))
