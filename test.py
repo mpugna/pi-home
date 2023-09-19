@@ -37,8 +37,7 @@ cursor = db.cursor()
 
 
 def sigint_handler(signum, frame):
-    ''' SIGINT handler - exit gracefully
-    '''
+    ''' SIGINT handler - exit gracefully '''
     logging.info(f'Program recevied SIGINT at: {dt.datetime.now()}')
     logging.shutdown()
     db.close()
@@ -61,37 +60,36 @@ def on_message(client, userdata, message):
     #  {"battery":100,"humidity":69.72,"linkquality":180,"temperature":25.93,"voltage":3200}
     
     # Insert temperature/humidity into database periodically
-    print(f'{dt.datetime.now()}: inserting data into to table: {temperature},{humidity},{linkquality}{battery}')
+    #print(f'{dt.datetime.now()}: inserting data into to table: {temperature},{humidity},{linkquality}{battery}')
     logging.debug(f'{dt.datetime.now()}: inserting data into to table: {temperature},{humidity},{linkquality}{battery}')
 
     # Insert temp and humidity data into table
     sqlcmd = f"INSERT INTO SENSORS VALUES ('{sensor_name}',datetime('now','localtime'),{temperature},{humidity},{linkquality},{battery})"
     sqlcmd = sqlcmd.replace('None','NULL')
-    print(sqlcmd)
     cursor.execute(sqlcmd)
-    print("{} record inserted.".format(cursor.rowcount))
+    #print("{} record inserted.".format(cursor.rowcount))
     logging.debug("{} record inserted.".format(cursor.rowcount))
 
     # Keep just the last 3 years of readings
     sqlcmd = f"DELETE FROM SENSORS WHERE datetime < datetime('now','localtime','-1095 days')"
     cursor.execute(sqlcmd)
-    print("{} records deleted.".format(cursor.rowcount))
+    #print("{} records deleted.".format(cursor.rowcount))
     logging.debug("{} records deleted.".format(cursor.rowcount))
     db.commit()
         
     cursor.execute("SELECT * FROM SENSORS LIMIT 1;")
     rows = cursor.fetchall()
-    print(rows[0])
+    logging.info(rows[0])
         
-    print(f"Timestamp: {dt.datetime.now():%Y-%m-%d %H:%M:%S}")
-    print(sensor_name, temperature, humidity, linkquality, battery)
+    #print(f"Timestamp: {dt.datetime.now():%Y-%m-%d %H:%M:%S}")
+    #print(sensor_name, temperature, humidity, linkquality, battery)
 
 
 # Connect to MQTT broker provided by zigbee2mqtt
 client = mqtt.Client()
 ret = client.connect(BROKER_IP, BROKER_PORT, MQTT_KEEPALIVE)
 if ret != 0:
-    print(f'MQTT connect return code: {ret}')
+    logging.info(f'MQTT connect return code: {ret}')
 
 
 client.subscribe(f"zigbee2/{SENSOR}")
@@ -100,11 +98,11 @@ client.on_message = on_message
 
 # Subscribe to all zigbee sensors
 client.subscribe(f'zigbee2mqtt/{SENSOR}', qos=QOS)
-print(f'Subscribed to: {SENSOR}')
+logging.info(f'Subscribed to: {SENSOR}')
 
 try:
     client.loop_forever()
 except KeyboardInterrupt:
     client.disconnect()
-    print('Terminating due to KeyboardInterrupt.')
+    logging.info('Terminating due to KeyboardInterrupt.')
     
