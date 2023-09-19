@@ -81,7 +81,6 @@ def on_message(client, userdata, message):
     cursor.execute("SELECT * FROM SENSORS LIMIT 1;")
     rows = cursor.fetchall()
     logging.info(rows[0])
-    print(rows[0[]])
         
     #print(f"Timestamp: {dt.datetime.now():%Y-%m-%d %H:%M:%S}")
     #print(sensor_name, temperature, humidity, linkquality, battery)
