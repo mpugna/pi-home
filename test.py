@@ -75,12 +75,12 @@ def on_message(client, userdata, message):
     print(sqlcmd)
     try:
         cursor.execute(sqlcmd)
-        except sqlite3.Error as er:
-            print('SQLite error: %s' % (' '.join(er.args)))
-            print("Exception class is: ", er.__class__)
-            print('SQLite traceback: ')
-            exc_type, exc_value, exc_tb = sys.exc_info()
-            print(traceback.format_exception(exc_type, exc_value, exc_tb))
+    except sqlite3.Error as er:
+        print('SQLite error: %s' % (' '.join(er.args)))
+        print("Exception class is: ", er.__class__)
+        print('SQLite traceback: ')
+        exc_type, exc_value, exc_tb = sys.exc_info()
+        print(traceback.format_exception(exc_type, exc_value, exc_tb))
     #print("{} record inserted.".format(cursor.rowcount))
     logging.debug("{} record inserted.".format(cursor.rowcount))
 
