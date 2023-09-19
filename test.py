@@ -65,7 +65,7 @@ def on_message(client, userdata, message):
     logging.debug(f'{dt.datetime.now()}: inserting data into to table: {temperature},{humidity},{linkquality}{battery}')
 
     # Insert temp and humidity data into table
-    sqlcmd = f"INSERT INTO 'SENSORS' ('name', 'timestamp', temperature', 'humidity', 'linkquality', 'battery')" + \
+    sqlcmd = f"INSERT INTO 'SENSORS' ('name', 'timestamp', temperature', 'humidity', 'linkquality', 'battery') " + \
         f"VALUES ('{sensor_name}',DATETIME('now', 'utc'),{temperature:.2f},{humidity:.2f},{linkquality:.0f},{battery:.2f});"
     sqlcmd = sqlcmd.replace('None','NULL')
     cursor.execute(sqlcmd)
