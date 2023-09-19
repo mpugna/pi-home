@@ -33,6 +33,7 @@ logging.info(f'Starting at {dt.datetime.now()} with loglevel={LOG_LEVEL}')
 
 
 db = sqlite3.connect(DATABASE)
+db.set_trace_callback(print)
 db.execute('CREATE TABLE IF NOT EXISTS SENSORS (name TEXT NOT NULL, timestamp TEXT NOT NULL, temperature REAL, humidity REAL, linkquality INTEGER, battery REAL);')
 cursor = db.cursor()
 
@@ -73,6 +74,7 @@ def on_message(client, userdata, message):
         f"VALUES (?, ?, ?, ?, ?, ?);"
     #sqlcmd = sqlcmd.replace('None','NULL')
     print(sqlcmd)
+    print([sensor_name,timestamp,temperature,humidity,linkquality,battery])
     try:
         cursor.execute(sqlcmd, [f'{sensor_name}',f'{timestamp}',temperature,humidity,linkquality,battery])
     except sqlite3.OperationalError as er:
