@@ -32,7 +32,7 @@ logging.info(f'Starting at {dt.datetime.now()} with loglevel={LOG_LEVEL}')
 
 
 db = sqlite3.connect(DATABASE)
-db.execute(f'CREATE TABLE IF NOT EXISTS SENSORS (sensor_name TEXT NOT NULL, timestamp TEXT NOT NULL, temperature double, humidity double, linkquality double, battery double)')
+db.execute(f'CREATE TABLE IF NOT EXISTS SENSORS (sensor_name TEXT NOT NULL, datetime TEXT NOT NULL, temperature double, humidity double, linkquality double, battery double)')
 cursor = db.cursor()
 
 
