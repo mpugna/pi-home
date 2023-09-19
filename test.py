@@ -34,7 +34,7 @@ logging.info(f'Starting at {dt.datetime.now()} with loglevel={LOG_LEVEL}')
 
 db = sqlite3.connect(DATABASE)
 db.set_trace_callback(print)
-db.execute('CREATE TABLE "SENSORS" ("name" TEXT NOT NULL, "timestamp" TEXT NOT NULL, "temperature" REAL, "humidity"	REAL, "linkquality"	INTEGER, "battery" REAL);')
+db.execute('CREATE TABLE IF NOT EXISTS "SENSORS" ("name" TEXT NOT NULL, "timestamp" TEXT NOT NULL, "temperature" REAL, "humidity"	REAL, "linkquality"	INTEGER, "battery" REAL);')
 cursor = db.cursor()
 
 
