@@ -33,7 +33,7 @@ logging.info(f'Starting at {dt.datetime.now()} with loglevel={LOG_LEVEL}')
 
 
 db = sqlite3.connect(DATABASE)
-db.execute('CREATE TABLE IF NOT EXISTS SENSORS (name TEXT NOT NULL, timestamp TEXT NOT NULL, temperature REAL, humidity REAL, linkquality INTEGER, battery REAL)')
+db.execute('CREATE TABLE IF NOT EXISTS SENSORS (name TEXT NOT NULL, timestamp TEXT NOT NULL, temperature REAL, humidity REAL, linkquality INTEGER, battery REAL);')
 cursor = db.cursor()
 
 
@@ -70,12 +70,12 @@ def on_message(client, userdata, message):
 
     # Insert temp and humidity data into table
     sqlcmd = f"INSERT INTO 'SENSORS' ('name', 'timestamp', 'temperature', 'humidity', 'linkquality', 'battery') " + \
-        f"VALUES ('{sensor_name}','{timestamp}',{temperature:.2f},{humidity:.2f},{linkquality:.0f},{battery:.2f});"
-    sqlcmd = sqlcmd.replace('None','NULL')
+        f"VALUES (?, ?, ?, ?, ?, ?);"
+    #sqlcmd = sqlcmd.replace('None','NULL')
     print(sqlcmd)
     try:
-        cursor.execute(sqlcmd)
-    except sqlite3.Error as er:
+        cursor.execute(sqlcmd, [f'{sensor_name}',f'{timestamp}',temperature,humidity,linkquality,battery])
+    except sqlite3.OperationalError as er:
         print('SQLite error: %s' % (' '.join(er.args)))
         print("Exception class is: ", er.__class__)
         print('SQLite traceback: ')
