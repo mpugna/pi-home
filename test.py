@@ -51,6 +51,7 @@ signal.signal(signal.SIGINT, sigint_handler)
 
 
 def timestamp_fmt(d: dt.datetime) -> str:
+    return "xxx"
     return str(d.strftime("%Y-%m-%d_%H:%M:%S.%f"))
 
 
