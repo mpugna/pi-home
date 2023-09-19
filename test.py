@@ -79,7 +79,7 @@ def on_message(client, userdata, message):
     logging.debug("{} records deleted.".format(cursor.rowcount))
     db.commit()
         
-    cursor.execute("SELECT * FROM table SENSORS LIMIT 1;")
+    cursor.execute("SELECT * FROM SENSORS LIMIT 1;")
     rows = cursor.fetchall()
     print(rows[0])
         
