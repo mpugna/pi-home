@@ -6,6 +6,7 @@ import logging
 import signal
 import sys
 import traceback
+import pandas as pd
 import sched, time
 # https://github.com/dschuurman/pi-home
 
@@ -33,7 +34,7 @@ logging.info(f'Starting at {dt.datetime.now()} with loglevel={LOG_LEVEL}')
 
 
 db = sqlite3.connect(DATABASE)
-db.set_trace_callback(print)
+#db.set_trace_callback(print)
 db.execute('CREATE TABLE IF NOT EXISTS "SENSORS" ("name" TEXT NOT NULL, "timestamp" REAL NOT NULL, "temperature" REAL, "humidity" REAL, "linkquality" INTEGER, "battery" REAL);')
 cursor = db.cursor()
 
@@ -96,6 +97,10 @@ def on_message(client, userdata, message):
     cursor.execute("SELECT * FROM SENSORS LIMIT 1;")
     rows = cursor.fetchall()
     logging.info(rows[0])
+    
+    cursor.execute("SELECT * FROM SENSORS", [since_epoch(dt.datetime.now() - dt.timedelta(days=1))])
+    rows = cursor.fetchall()
+    print(pd.DataFrame(rows))
         
     #print(f"Timestamp: {dt.datetime.now():%Y-%m-%d %H:%M:%S}")
     #print(sensor_name, temperature, humidity, linkquality, battery)
