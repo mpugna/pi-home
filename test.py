@@ -1,5 +1,5 @@
 import paho.mqtt.client as mqtt
-import datetime as dt
+import datetime as dt, time
 import json
 import sqlite3
 import logging
@@ -34,7 +34,7 @@ logging.info(f'Starting at {dt.datetime.now()} with loglevel={LOG_LEVEL}')
 
 db = sqlite3.connect(DATABASE)
 db.set_trace_callback(print)
-db.execute('CREATE TABLE IF NOT EXISTS "SENSORS" ("name" TEXT NOT NULL, "timestamp" TEXT NOT NULL, "temperature" REAL, "humidity" REAL, "linkquality" INTEGER, "battery" REAL);')
+db.execute('CREATE TABLE IF NOT EXISTS "SENSORS" ("name" TEXT NOT NULL, "timestamp" REAL NOT NULL, "temperature" REAL, "humidity" REAL, "linkquality" INTEGER, "battery" REAL);')
 cursor = db.cursor()
 
 
@@ -50,13 +50,14 @@ def sigint_handler(signum, frame):
 signal.signal(signal.SIGINT, sigint_handler)
 
 
-def timestamp_fmt(d: dt.datetime) -> str:
+def since_epoch(d: dt.datetime) -> float:
+    return time.mktime(d.timetuple())
     return f"{d:%Y-%m-%d %H:%M:%S.%r}"
     return str(d.strftime("%Y-%m-%d_%H:%M:%S.%f"))
 
 
 def on_message(client, userdata, message):
-    timestamp = timestamp_fmt(dt.datetime.now())
+    timestamp = since_epoch(dt.datetime.now())
     sensor_name = message.topic.split('/')[1]   # Extract sensor "friendly name" from MQTT topic
     msg = str(message.payload.decode("utf-8"))
     status = json.loads(msg) # Parse JSON message from sensor into a dictionary
@@ -86,7 +87,7 @@ def on_message(client, userdata, message):
     logging.debug("{} record inserted.".format(cursor.rowcount))
 
     # Keep just the last 3 years of readings
-    sqlcmd = f"DELETE FROM SENSORS WHERE datetime < " +  timestamp_fmt(dt.datetime.now() + dt.timedelta(days=-1095))
+    sqlcmd = f"DELETE FROM SENSORS WHERE datetime < " +  since_epoch(dt.datetime.now() + dt.timedelta(days=-1095))
     cursor.execute(sqlcmd)
     #print("{} records deleted.".format(cursor.rowcount))
     logging.debug("{} records deleted.".format(cursor.rowcount))
