@@ -73,6 +73,7 @@ def on_message(client, userdata, message):
         f"VALUES (?, ?, ?, ?, ?, ?);"
     #sqlcmd = sqlcmd.replace('None','NULL')
     print(sqlcmd)
+    print([sensor_name,timestamp,temperature,humidity,linkquality,battery])
     try:
         cursor.execute(sqlcmd, [f'{sensor_name}',f'{timestamp}',temperature,humidity,linkquality,battery])
     except sqlite3.OperationalError as er:
