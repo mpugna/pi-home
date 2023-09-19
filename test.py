@@ -50,7 +50,7 @@ signal.signal(signal.SIGINT, sigint_handler)
 
 
 def on_message(client, userdata, message):
-    timestamp = str(dt.datetime.now().isoformat())
+    #timestamp = str(dt.datetime.now().isoformat())
     sensor_name = message.topic.split('/')[1]   # Extract sensor "friendly name" from MQTT topic
     msg = str(message.payload.decode("utf-8"))
     status = json.loads(msg) # Parse JSON message from sensor into a dictionary
@@ -65,7 +65,8 @@ def on_message(client, userdata, message):
     logging.debug(f'{dt.datetime.now()}: inserting data into to table: {temperature},{humidity},{linkquality}{battery}')
 
     # Insert temp and humidity data into table
-    sqlcmd = f"INSERT INTO SENSORS VALUES ('{sensor_name}','{timestamp}',{temperature:.2f},{humidity:.2f},{linkquality:.0f},{battery:.2f})"
+    sqlcmd = f"INSERT INTO 'SENSORS' ('name', 'timestamp', temperature', 'humidity', 'linkquality', 'battery')" + \
+        f"VALUES ('{sensor_name}',DATETIME('now', 'utc'),{temperature:.2f},{humidity:.2f},{linkquality:.0f},{battery:.2f});"
     sqlcmd = sqlcmd.replace('None','NULL')
     cursor.execute(sqlcmd)
     #print("{} record inserted.".format(cursor.rowcount))
