@@ -5,6 +5,7 @@ import sqlite3
 import logging
 import signal
 import sys
+import traceback
 import sched, time
 # https://github.com/dschuurman/pi-home
 
@@ -72,7 +73,14 @@ def on_message(client, userdata, message):
         f"VALUES ('{sensor_name}','{timestamp}',{temperature:.2f},{humidity:.2f},{linkquality:.0f},{battery:.2f});"
     sqlcmd = sqlcmd.replace('None','NULL')
     print(sqlcmd)
-    cursor.execute(sqlcmd)
+    try:
+        cursor.execute(sqlcmd)
+        except sqlite3.Error as er:
+            print('SQLite error: %s' % (' '.join(er.args)))
+            print("Exception class is: ", er.__class__)
+            print('SQLite traceback: ')
+            exc_type, exc_value, exc_tb = sys.exc_info()
+            print(traceback.format_exception(exc_type, exc_value, exc_tb))
     #print("{} record inserted.".format(cursor.rowcount))
     logging.debug("{} record inserted.".format(cursor.rowcount))
 
