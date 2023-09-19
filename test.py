@@ -61,17 +61,20 @@ def on_message(client, userdata, message):
     #  {"battery":100,"humidity":69.72,"linkquality":180,"temperature":25.93,"voltage":3200}
     
     # Insert temperature/humidity into database periodically
+    print(f'{dt.datetime.now()}: inserting data into to table: {temperature},{humidity},{linkquality}{battery}')
     logging.debug(f'{dt.datetime.now()}: inserting data into to table: {temperature},{humidity},{linkquality}{battery}')
 
     # Insert temp and humidity data into table
     sqlcmd = f"INSERT INTO SENSORS VALUES (datetime('now','localtime'),{temperature},{humidity},{linkquality},{battery})"
     sqlcmd = sqlcmd.replace('None','NULL')
     cursor.execute(sqlcmd)
+    print("{} record inserted.".format(cursor.rowcount))
     logging.debug("{} record inserted.".format(cursor.rowcount))
 
     # Keep just the last 3 years of readings
     sqlcmd = f"DELETE FROM SENSORS WHERE datetime < datetime('now','localtime','-1095 days')"
     cursor.execute(sqlcmd)
+    print("{} records deleted.".format(cursor.rowcount))
     logging.debug("{} records deleted.".format(cursor.rowcount))
     db.commit()
         
