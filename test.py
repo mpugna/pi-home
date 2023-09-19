@@ -98,11 +98,15 @@ def on_message(client, userdata, message):
     rows = cursor.fetchall()
     logging.info(rows[0])
     
+    cursor.execute("SELECT * FROM SENSORS;')
+    rows = cursor.fetchall()
+    print(rows)
+
     db.set_trace_callback(print)
     cursor.execute("SELECT * FROM SENSORS WHERE timestamp < ?;", [since_epoch(dt.datetime.now() - dt.timedelta(days=1))])
     db.set_trace_callback(None)
-    print(rows)
     rows = cursor.fetchall()
+    print(rows)
     print(pd.DataFrame(rows))
         
     #print(f"Timestamp: {dt.datetime.now():%Y-%m-%d %H:%M:%S}")
