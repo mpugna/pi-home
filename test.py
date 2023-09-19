@@ -34,7 +34,7 @@ logging.info(f'Starting at {dt.datetime.now()} with loglevel={LOG_LEVEL}')
 
 db = sqlite3.connect(DATABASE)
 db.set_trace_callback(print)
-db.execute('CREATE TABLE IF NOT EXISTS "SENSORS" ("name" TEXT NOT NULL, "timestamp" TEXT NOT NULL, "temperature" REAL, "humidity"	REAL, "linkquality"	INTEGER, "battery" REAL);')
+db.execute('CREATE TABLE IF NOT EXISTS "SENSORS" ("name" TEXT NOT NULL, "timestamp" TEXT NOT NULL, "temperature" REAL, "humidity" REAL, "linkquality" INTEGER, "battery" REAL);')
 cursor = db.cursor()
 
 
@@ -51,7 +51,7 @@ signal.signal(signal.SIGINT, sigint_handler)
 
 
 def timestamp_fmt(d: dt.datetime) -> str:
-    return "xxx"
+    return f"{d:%Y-%m-%d %H:%M:%S.%r}"
     return str(d.strftime("%Y-%m-%d_%H:%M:%S.%f"))
 
 
@@ -88,7 +88,7 @@ def on_message(client, userdata, message):
     logging.debug("{} record inserted.".format(cursor.rowcount))
 
     # Keep just the last 3 years of readings
-    sqlcmd = f"DELETE FROM SENSORS WHERE datetime < " +  timestamp_fmt(dt.datetime.now() + dt.timedelta(days=-1095))
+    sqlcmd = f"DELETE FROM SENSORS WHERE timestamp < " +  timestamp_fmt(dt.datetime.now() + dt.timedelta(days=-1095))
     cursor.execute(sqlcmd)
     #print("{} records deleted.".format(cursor.rowcount))
     logging.debug("{} records deleted.".format(cursor.rowcount))
